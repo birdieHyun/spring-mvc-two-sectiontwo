@@ -33,7 +33,7 @@ public class FormItemController {
 
     @GetMapping("/add")
     public String addForm(Model model) {
-        model.addAttribute("item", new Item());
+        model.addAttribute("item", new Item()); // 빈 아이템 객체를 넘겨준다.(빈 객체 하나정도는 큰 비용이 들지 않기 때문에, 타임리프에서 문제를 잡아주는 등 장점이 크다.
         return "form/addForm";
     }
 
