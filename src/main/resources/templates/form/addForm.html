@@ -18,7 +18,7 @@
         <h2>상품 등록 폼</h2>
     </div>
 
-<!--    model.addAttribute를 통해 여기서 item 객체를 넣어준다.-->
+    <!--    model.addAttribute를 통해 여기서 item 객체를 넣어준다.-->
     <form action="item.html" th:action th:object="${item}" method="post">
         <div>
             <label for="itemName">상품명</label>
@@ -35,6 +35,17 @@
 
         <hr class="my-4">
 
+        <!-- single checkbox -->
+        <div>판매 여부</div>
+        <div>
+            <div class="form-check">
+<!--                th:obejct="${item}" 해줬기 때문에 ${item.open} 을 *{open}으로 바꿔도 된다.-->
+                <input type="checkbox" id="open" th:field="*{open}" class="form-check-input">
+<!--                <input type="hidden" name="_open" th:value="on"/>  히든필드는 타임리프가 있기 때문에 지워도 된다.-->
+                <label for="open" class="form-check-label">판매 오픈</label>
+            </div>
+        </div>
+
         <div class="row">
             <div class="col">
                 <button class="w-100 btn btn-primary btn-lg" type="submit">상품 등록</button>
@@ -43,7 +54,8 @@
                 <button class="w-100 btn btn-secondary btn-lg"
                         onclick="location.href='items.html'"
                         th:onclick="|location.href='@{/form/items}'|"
-                        type="button">취소</button>
+                        type="button">취소
+                </button>
             </div>
         </div>
 
