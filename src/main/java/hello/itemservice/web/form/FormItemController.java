@@ -1,7 +1,9 @@
 package hello.itemservice.web.form;
 
+import hello.itemservice.domain.item.DeliveryCode;
 import hello.itemservice.domain.item.Item;
 import hello.itemservice.domain.item.ItemRepository;
+import hello.itemservice.domain.item.ItemType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -9,7 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Controller
@@ -18,6 +20,31 @@ import java.util.List;
 public class FormItemController {
 
     private final ItemRepository itemRepository;
+
+    // 물론 static 영역에 놓는 등 성능 최적화를 위해 생각해보아야 한다. (이정도는 성능에 크게 영향 없다...?)
+    @ModelAttribute("regions")    // 이렇게 하면 컨트롤러가 호출될 때 무조건 모델에 regions가 담기게 된다.
+    public Map<String, String> regions(){
+        Map<String, String> regions = new LinkedHashMap<>(); // LinkedHashMap 사용해서 순서 보장
+        regions.put("SEOUL", "서울");
+        regions.put("BUSAN", "부산");
+        regions.put("JEJU", "제주");
+        return regions;
+    }
+
+    @ModelAttribute("itemTypes")
+    public ItemType[] itemTypes(){
+        return ItemType.values();
+    }
+
+    @ModelAttribute("deliveryCodes")
+    public List<DeliveryCode> deliveryCodes() {
+        List<DeliveryCode> deliveryCodes = new ArrayList<>();
+        deliveryCodes.add(new DeliveryCode("FAST", "빠른 배송"));
+        deliveryCodes.add(new DeliveryCode("NORMAL", "일반 배송"));
+        deliveryCodes.add(new DeliveryCode("SLOW", "느린 배송"));
+        return deliveryCodes;
+    }
+
 
     @GetMapping
     public String items(Model model) {
@@ -36,12 +63,18 @@ public class FormItemController {
     @GetMapping("/add")
     public String addForm(Model model) {
         model.addAttribute("item", new Item()); // 빈 아이템 객체를 넘겨준다.(빈 객체 하나정도는 큰 비용이 들지 않기 때문에, 타임리프에서 문제를 잡아주는 등 장점이 크다.
+
+
+
         return "form/addForm";
     }
 
     @PostMapping("/add")
     public String addItem(@ModelAttribute Item item, RedirectAttributes redirectAttributes) {
         log.info("item.opne={}", item.getOpen());
+        log.info("item.regions={}",item.getRegions());
+        log.info("item.itemType={}", item.getItemType());
+
         Item savedItem = itemRepository.save(item);
         redirectAttributes.addAttribute("itemId", savedItem.getId());
         redirectAttributes.addAttribute("status", true);
@@ -60,6 +93,7 @@ public class FormItemController {
         itemRepository.update(itemId, item);
         return "redirect:/form/items/{itemId}";
     }
+
 
 }
 
